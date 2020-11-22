@@ -5,7 +5,6 @@ import csv
 import json
 import os
 import shutil
-import openpyxl
 import requests
 from time import mktime, strptime
 
@@ -15,66 +14,81 @@ class Kestrel:
     def __init__(self, host):
         self.host = host
 
-    def mk_workbook(self, excel_file):
-        try:
-            self.wb = openpyxl.load_workbook(excel_file)
-            return self.wb
-        except:
-            print('Provide valid kestrel excel sheet')
-            return None
+    def __repr__(self):
+        return f'Kestrel("{self.host}")'
 
-    def get_sheetnames(self, wb):
-        try:
-            self.sheetnames = wb.sheetnames
-            return self.sheetnames
-        except:
-            print('provide excel workbook')
-            return None
-
-    def validate_sheet(self, wb, sheet):
-        if wb[sheet].cell(row=1, column=1).value.lower().replace(' ', '') == 'devicename':
-            if wb[sheet].cell(row=2, column=1).value.lower().replace(' ', '') == 'devicemodel':
-                if wb[sheet].cell(row=3, column=1).value.lower().replace(' ', '') == 'serialnumber':
-                    return True
-        return False
-
-    def get_data(self, wb, sheet):
-        if self.validate_sheet(wb, sheet):
-            formatted = {
-                'host': self.host,
-                'data_name': f'{self.host}_history',
-                'data': []
+    def format_csv(self, csv_file):
+        # return list of formatted dictionaries
+        csv_data = self.load_csv(csv_file)
+        columns = self.get_columns(csv_data[3])
+        data = csv_data[5:]
+        formatted = {
+            'host': self.host,
+            'data_name': f'{self.host}_history',
+            'data': []
+        }
+        for line in data:
+            entry = {
+                'created_at': self.get_epoch(line[0], '%Y-%m-%d %H:%M:%S'),
+                'data': {}
             }
-            for row in range(6, wb[sheet].max_row+1):
-                created_at = self.get_epoch(wb[sheet].cell(row=row, column=1).value)
-                entry = {
-                    'created_at': created_at,
-                    'data': {}
-                }
-                for column in range(2, wb[sheet].max_column+1):
-                    key = wb[sheet].cell(row=4, column=column).value.replace(' ', '').lower()
-                    value = float(wb[sheet].cell(row=row, column=column).value)
-                    entry['data'][key] = value
-                formatted['data'].append(entry)
-            return formatted
-        else:
-            return None
+            for i, column in enumerate(columns):
+                value = self.get_value(line[i])
+                entry['data'][column] = value
+            formatted['data'].append(entry)
+        return formatted
 
     @staticmethod
-    def get_epoch(time_val):
+    def get_columns(line):
+        columns = []
+        for column in line:
+            if column == '':
+                continue
+            column = column.replace(' ', '_')\
+            .replace('-', '_')\
+            .replace('/', '')\
+            .replace('.', '_')\
+            .lower()
+            columns.append(column)
+        return columns
+
+    @staticmethod
+    def load_csv(csv_file):
+        try:
+            with open(csv_file, 'r') as f:
+                reader = csv.reader(f)
+                data = list(reader)
+            return data
+        except:
+            raise Exception('Invalid csv file')
+    
+    @staticmethod
+    def get_value(value):
+            try:
+                value = float(value)
+                if value.is_integer():
+                    value = int(value)
+            except ValueError:
+                value = str(value)
+            return value
+
+    @staticmethod
+    def get_epoch(time_val, pattern):
         # convert kestrel time val to epoch timestamp
-        return int(time_val.timestamp())
+        epoch = int(mktime(strptime(time_val, pattern)))
+        return epoch
 
 
 class PurpleAir:
 
-    def __init__(self, host, purple_id):
-        self.host = host
+    def __init__(self, purple_id):
         self.purple_id = purple_id
+        assert int(self.purple_id)
+        self.host = f'purpleAir_{self.purple_id}'
         self.live_page = f'https://www.purpleair.com/json?show={self.purple_id}'
 
     def __repr__(self):
-        return f'PurpleAir("{self.host}", "{self.purple_id}")'
+        return f'PurpleAir("{self.purple_id}")'
 
     def fetch_raw(self):
         # retrieve raw live data dictionary
@@ -121,44 +135,42 @@ class PurpleAir:
         
         return formatted
 
-    def get_data(self, csv_file):
+    def format_csv(self, csv_file):
         # return list of formatted dictionaries
-        meta, data = self.load_csv(csv_file)
-        if data:
-            try:
-                formatted = {
-                    'host': self.host,
-                    'data_name': f'{self.host}_history',
-                    'data': []
-                }
-                for line in data:
-                    entry = {
-                        'created_at': self.get_epoch(line[0]),
-                        'data': {}
-                    }
-                    for i, column in enumerate(meta[1:]):
-                        column = column.replace('.', '_')\
-                            .replace('>=', 'p_')\
-                            .replace('_ug/m3', '')\
-                            .replace('_hpa', '')\
-                            .replace('um/dl', '')\
-                            .lower()
-                        try:
-                            value = int(line[i+1])
-                        except ValueError:
-                            try:
-                                value = float(line[i+1])
-                            except ValueError:
-                                value = line[i+1]
-                        entry['data'][column] = value
-                    formatted['data'].append(entry)
-                return formatted
-            except:
-                print('CSV format error!')
-                return None
-        else:
-            print('Could not retrieve data from csv!')
-            return None
+        csv_data = self.load_csv(csv_file)
+        columns = self.get_columns(csv_data[0])
+        data = csv_data[1:]
+        formatted = {
+            'host': self.host,
+            'data_name': f'{self.host}_history',
+            'data': []
+        }
+        for line in data:
+            entry = {
+                'created_at': self.get_epoch(line[0]),
+                'data': {}
+            }
+            for i, column in enumerate(columns):
+                value = self.get_value(line[i])
+                entry['data'][column] = value
+            formatted['data'].append(entry)
+        return formatted
+
+    @staticmethod
+    def get_columns(line):
+        columns = []
+        for column in line:
+            if column == '':
+                continue
+            column = column.replace('>=', 'p_')\
+            .replace('_ug/m3', '')\
+            .replace('_hpa', '')\
+            .replace('um/dl', '')\
+            .replace('/', '')\
+            .replace('.', '_')\
+            .lower()
+            columns.append(column)
+        return columns
 
     @staticmethod
     def load_csv(csv_file):
@@ -166,11 +178,19 @@ class PurpleAir:
             with open(csv_file, 'r') as f:
                 reader = csv.reader(f)
                 data = list(reader)
-                meta, data = data[0], data[1:]
-                meta.remove('')
-            return (meta, data)
+            return data
         except:
-            return None
+            raise Exception('Invalid csv file')
+    
+    @staticmethod
+    def get_value(value):
+            try:
+                value = float(value)
+                if value.is_integer():
+                    value = int(value)
+            except ValueError:
+                value = str(value)
+            return value
 
     @staticmethod
     def get_epoch(time_val):
@@ -196,62 +216,72 @@ class CampbellSci:
 
         return raw_data
 
-
-    def get_data(self, dat_file):
+    def format_csv(self, csv_file):
         # return list of formatted dictionaries
-        meta, data = self.load_csv(dat_file)
-        if data:
-            try:
-                formatted = {
-                    'host': self.host,
-                    'data_name': f'{self.host}_history',
-                    'data': []
-                }
-                for line in data:
-                    entry = {
-                        'created_at': self.get_epoch(line[0]),
-                        'data': {}
-                    }
-                    for i, column in enumerate(meta[1][1:]):
-                        column = column.replace('.', '_')\
-                            .replace('>=', 'p_')\
-                            .replace('_ug/m3', '')\
-                            .replace('_hpa', '')\
-                            .replace('um/dl', '')\
-                            .lower()
-                        try:
-                            value = int(line[i+1])
-                        except ValueError:
-                            try:
-                                value = float(line[i+1])
-                            except ValueError:
-                                value = line[i+1]
-                        entry['data'][column] = value
-                    formatted['data'].append(entry)
-                return formatted
-            except:
-                print('CSV format error!')
-                return None
-        else:
-            print('Could not retrieve data from csv!')
-            return None
+        csv_data = self.load_csv(csv_file)
+        columns = self.get_columns(csv_data[1])
+        data = csv_data[4:]
+        formatted = {
+            'host': self.host,
+            'data_name': f'{self.host}_history',
+            'data': []
+        }
+        for line in data:
+            entry = {
+                'created_at': self.get_epoch(line[0]),
+                'data': {}
+            }
+            for i, column in enumerate(columns):
+                value = self.get_value(line[i])
+                entry['data'][column] = value
+            formatted['data'].append(entry)
+        return formatted
 
     @staticmethod
-    def load_csv(dat_file):
+    def get_columns(line):
+        columns = []
+        for column in line:
+            if column == '':
+                continue
+            column = column.replace('>=', 'p_')\
+            .replace('_ug/m3', '')\
+            .replace('_hpa', '')\
+            .replace('um/dl', '')\
+            .replace('/', '')\
+            .replace('.', '_')\
+            .lower()
+            columns.append(column)
+        return columns
+
+    @staticmethod
+    def load_csv(csv_file):
         try:
-            with open(dat_file, 'r') as f:
+            with open(csv_file, 'r') as f:
                 reader = csv.reader(f)
                 data = list(reader)
-                meta, data = data[0:3], data[4:]
-            return (meta, data)
+            return data
         except:
-            return None
+            raise Exception('Invalid csv file')
+    
+    @staticmethod
+    def get_value(value):
+            try:
+                value = float(value)
+                if value.is_integer():
+                    value = int(value)
+            except ValueError:
+                value = str(value)
+            return value
 
     @staticmethod
     def get_epoch(time_val):
         # convert purple time elem to epoch timestamp
+        time_val = time_val.strip(' UTC')
         pattern = '%Y-%m-%d %H:%M:%S'
         epoch = int(mktime(strptime(time_val, pattern)))
+
+        # convert epoch
+        epoch -= 18_000
         return epoch
 
 
