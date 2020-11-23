@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block body %}
+<div class="flash-section">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert-{{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+<div class="featured-image"></div>
+<div class="home-container">
+    <h1>OHIO's Newest Green Roof</h1>
+    <p>
+        Schoonover Center is the home of Ohio University's newest green roof. 
+        Installed in July, 2020, during the COVID-19 pandemic, the green roof 
+        is already a bright spot in an otherwise challenging summer. Once 
+        building occupants return to Schoonover, they will no longer have to 
+        view a glaring white roof membrane out of their south-facing windows, 
+        but will instead see green plantings. The roof will not only provide 
+        viewing pleasures, but will be used for research by many colleges and 
+        departments across the University. This site contains the collected data 
+        related to the green roof.
+        <a href="https://www.ohio.edu/sustainability/schoonover-green-roof-project" target="_blank" class="link">
+            Click here
+        </a>
+        for more information.
+    </p>
+
+    <!-- Social Media Links -->
+    <div class="social">
+        <ul>
+            <li class="social-link">
+                <a href="https://www.ohio.edu/sustainability/schoonover-green-roof-project" target="_blank">
+                    <img src="{{ url_for('static', filename='img/greenInitiative.png') }}" alt="OU Green Initiative">
+                </a>
+            </li>
+            <li class="social-link">
+                <a href="https://twitter.com/ougreenteam" target="_blank">
+                    <img src="{{ url_for('static', filename='img/twitter.png') }}" alt="Twitter">
+                </a>
+            </li>
+            <li class="social-link">
+                <a href="https://www.instagram.com/greeninitiativeou/?igshid=1oormpa9kf9v9" target="_blank">
+                    <img src="{{ url_for('static', filename='img/instagram.png') }}" alt="Instagram">
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

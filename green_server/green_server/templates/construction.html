@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block body %}
+<div class="construction-container">
+    <img class="construction-image" src="{{ url_for('static', filename='img/caution.png') }}" alt="caution">
+    <h2 class="construction-text">{{ m }}</h2>
+</div>
+{% endblock %}

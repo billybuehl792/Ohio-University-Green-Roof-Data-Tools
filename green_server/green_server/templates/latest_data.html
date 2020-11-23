@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block body %}
+<div class="content-container">
+    <!-- HEAD -->
+    <h2>{{ title }} Recent Data</h2>
+    <h3>{{ device.descr }} | {{ device.collection_method }}</h3>
+
+    <!-- TABLE -->
+    <table class="data-table">
+        <tr class="table-head">
+            <th>Item</th>
+            <th>Value</th>
+            <th>Timestamp</th>
+            <th>Description</th>
+        </tr>
+        {% for item in d %}
+            <tr class="data-item">
+                <td>
+                    <a href="{{ url_for('main.graph_parameter', parameter_id=item['id'] ) }}">{{ item['name'] }}</a>
+                </td>
+                <td>{{ item['value'] }}</td>
+                <td>{{ item['timestamp'] }}</td>
+                <td>{{ item['descr'] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+</div>
+{% endblock %}

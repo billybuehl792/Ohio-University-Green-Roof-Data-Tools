@@ -1,0 +1,48 @@
+<nav>
+
+    <!-- Logo -->
+    <a href="{{ url_for('main.home') }}">
+        <img id="logo" src="{{ url_for('static', filename='img/logo.png') }}" alt="OU Logo">
+    </a>
+
+    <!-- mobile burger -->
+    <div id="burger">
+        <div id="bar1" class="burger-bar"></div>
+        <div id="bar2" class="burger-bar"></div>
+        <div id="bar3" class="burger-bar"></div>
+    </div>
+
+    <!-- navigation section -->
+    <div class="nav-container">
+        <ul id='nav-links'>
+            <hr class="nav-divide">
+            <li>
+                <a href="{{ url_for('main.home') }}" class="nav-link">Home</a>
+            </li>
+            {% if current_user.is_authenticated %}
+                <li>
+                    <a href="{{ url_for('main.account') }}" class="nav-link">User: {{ current_user.username }}</a>
+                </li>
+            {% else %}
+                <li>
+                    <a href="{{ url_for('main.login') }}" class="nav-link">Login</a>
+                </li>
+            {% endif %}
+            <li>
+                <a href="{{ url_for('main.graph') }}" class="nav-link">Graphs</a>
+            </li>
+            {% if current_user.admin %}
+            <li>
+                <a href="{{ url_for('settings.configuration') }}" class="nav-link">Configuration</a>
+            </li>
+            {% endif %}
+            <hr class="nav-divide">
+            {% for dev in devices %}
+                <li>
+                    <a href="{{ url_for('main.latest_data', device_id=dev.public_id) }}" class="nav-link">{{ dev.name }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    
+</nav>

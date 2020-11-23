@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block body %}
+    <div class="content-container">
+
+        <div class="flash-section">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        </div>
+
+        <!-- HEAD -->
+        <h2>App Configuration</h2>
+
+        <!-- USER TABLE -->
+        <table class="data-table">
+            <tr class="table-head">
+                <th>User</th>
+                <th>id</th>
+                <th>public_id</th>
+                <th>username</th>
+                <th>admin</th>
+            </tr>
+            {% for u in users %}
+            <tr>
+                <td>
+                    {% if not u.admin %}
+                    <a href="{{ url_for('settings.user', user_id=u.public_id) }}">edit</a> | <a href="{{ url_for('settings.delete_user', user_id=u.public_id) }}">delete</a>
+                    {% else %}
+                    <a href="">(immutable)</a>
+                    {% endif %}
+                </td>
+                <td>{{ u.id }}</td>
+                <td>{{ u.public_id }}</td>
+                <td>{{ u.username }}</td>
+                <td>{{ u.admin }}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td>
+                    <a href="{{ url_for('settings.new_user') }}">+new user</a>
+                </td>
+            </tr>
+        </table>
+
+        <!-- DEVICE TABLE -->
+        <table class="data-table">
+            <tr class="table-head">
+                <th>Device</th>
+                <th>id</th>
+                <th>public_id</th>
+                <th>name</th>
+                <th>collection method</th>
+                <th>description</th>
+            </tr>
+            {% for dev in devices %}
+            <tr>
+                <td>
+                    <a href="{{ url_for('settings.device', device_id=dev.public_id) }}">edit</a> | <a href="{{ url_for('settings.delete_device', device_id=dev.public_id) }}">delete</a>
+                </td>
+                <td>{{ dev.id }}</td>
+                <td>{{ dev.public_id }}</td>
+                <td>{{ dev.name }}</td>
+                <td>{{ dev.collection_method }}</td>
+                <td>{{ dev.descr }}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td>
+                    <a href="{{ url_for('settings.new_device') }}">+new device</a>
+                </td>
+            </tr>
+        </table>
+
+        <!-- PARAMETER TABLE -->
+        <table class="data-table">
+            <tr class="table-head">
+                <th>Parameter</th>
+                <th>id</th>
+                <th>public_id</th>
+                <th>device</th>
+                <th>name</th>
+                <th>description</th>
+            </tr>
+            {% for param in parameters %}
+            <tr>
+                <td>
+                    <a href="{{ url_for('settings.parameter', parameter_id=param.public_id) }}">edit</a> | <a href="{{ url_for('settings.delete_parameter', parameter_id=param.public_id) }}">delete</a>
+                </td>
+                <td>{{ param.id }}</td>
+                <td>{{ param.public_id }}</td>
+                <td>{{ param.device.name }}</td>
+                <td>{{ param.name }}</td>
+                <td>{{ param.descr }}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td>
+                    <a href="{{ url_for('settings.new_parameter') }}">+new parameter</a>
+                </td>
+            </tr>
+        </table>
+
+        <button onclick="location.href='{{ url_for('settings.upload_data') }}'">Upload Data</button>
+    </div>
+{% endblock %}

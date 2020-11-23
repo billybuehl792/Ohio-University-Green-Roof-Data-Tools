@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <title>OUGR - Login</title>
+        <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
+        <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;400;600;800;900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/resetStyle.css') }}" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/loginStyle.css') }}" rel="stylesheet">
+    </head>
+    <body>
+        <div class="container">
+            <h1 class="title">OUGR Login</h1>
+            <form method="POST" action="">
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    {{ form.user.label(class="form-control-label") }}
+                    {{ form.user(class="form-control-field")}}
+                </div>
+                <div class="form-group">
+                    {{ form.password.label(class="form-control-label") }}
+                    {{ form.password(class="form-control-field")}}
+                </div>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert-{{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                <div class="form-group">
+                    {{ form.remember.label(class="form-control-label") }}
+                    {{ form.remember(class="form-control-radio")}}
+                </div>
+                <div class="form-group">
+                {{ form.login(class="submit-button")}}                    
+                </div>
+            </form>
+        </div>
+        <small class="copyright">© 2020, Ohio University Green Roof</small>
+    </body>
+</html>

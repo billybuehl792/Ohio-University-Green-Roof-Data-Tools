@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <title>OUGR - {% block title %}{% endblock %}</title>
+        <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
+        <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;400;600;800;900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/resetStyle.css') }}" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/navStyle.css') }}" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/mainStyle.css') }}" rel="stylesheet">
+        <script type='text/javascript' src="{{ url_for('static', filename='app.js') }}"></script>
+        {% block head %}{% endblock %}
+    </head>
+    <body>
+
+        <!-- navigation -->
+        {% include "includes/_navbar.html" %}
+        
+        <!-- page content -->
+        <div class="content">
+            {% block body %}{% endblock %}
+        </div>
+
+    
+    <script>app();</script>
+    </body>
+</html>

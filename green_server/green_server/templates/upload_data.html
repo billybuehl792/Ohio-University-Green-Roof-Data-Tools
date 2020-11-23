@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block body %}
+    <div class="content-container">
+        
+        <div class="content-container">
+            <a href="{{ url_for('settings.configuration') }}" class="link">&larr; Configuration</a>
+            <h2>{{ title }}</h2>
+            <h3>IMPORTANT! Data uploader will only accept csv files in the following format:</h3>
+            <table class="data-table">
+                <tr>
+                    <td>{parameter public_id}</td>
+                    <td>{10 digit timestamp}</td>
+                    <td>{float value}</td>
+                </tr>
+            </table>
+            <p>example:</p>
+            <table class="data-table">
+                <tr>
+                    <td>350287595</td>
+                    <td>1605055888</td>
+                    <td>1.4</td>
+                </tr>
+                <tr>
+                    <td>350287595</td>
+                    <td>1605056132</td>
+                    <td>2.33</td>
+                </tr>
+                <tr>
+                    <td>350287595</td>
+                    <td>1605058201</td>
+                    <td>5.12</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="content-container">
+            <div class="form-container">
+                <form method="POST" action="" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+                    <div class="form-group">
+                        {{ form.data_file.label(class="form-control-label") }}
+                        <br>
+                        {{ form.data_file(class="form-upload-field", accept=".csv")}}
+                    </div>
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert-{{ category }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    <div class="form-group">
+                    {{ form.upload(class="submit-button")}}                    
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

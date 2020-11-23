@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block body %}
+    <div class="content-container">
+        
+        <div class="content-container">
+            <a href="{{ url_for('settings.configuration') }}" class="link">&larr; Configuration</a>
+            <h2>{{ title }}</h2>
+        </div>
+
+        <div class="content-container">
+            <div class="form-container">
+                <h3>WARNING! Username and password length must be greater than 7 characters.</h3>
+                <form method="POST" action="">
+                    {{ form.hidden_tag() }}
+                    <div class="form-group">
+                        {{ form.user.label(class="form-control-label") }}
+                        <br>
+                        {{ form.user(class="form-control-field")}}
+                    </div>
+                    <div class="form-group">
+                        {{ form.password.label(class="form-control-label") }}
+                        <br>
+                        {{ form.password(class="form-control-field")}}
+                    </div>
+                    <div class="form-group">
+                        {{ form.confirm_password.label(class="form-control-label") }}
+                        <br>
+                        {{ form.confirm_password(class="form-control-field")}}
+                    </div>
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert-{{ category }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    <div class="form-group">
+                    {{ form.create(class="submit-button")}}                    
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

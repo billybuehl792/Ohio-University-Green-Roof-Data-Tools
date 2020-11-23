@@ -1,0 +1,118 @@
+/* Navigation */
+nav {
+    position: fixed;
+    z-index: 3;
+    width: 200px;
+    height: 100vh;
+    text-align: center;
+    background-color: var(--green, green);
+    box-shadow: 0px 0px 2px var(--dark, black);
+}
+#logo {
+    width: 150px;
+    margin: 10px 0px;
+    height: auto;
+    transition: .2s ease;
+}
+#logo:hover {
+    filter: invert(1);
+    transition: .2s ease;
+}
+#burger {
+    display: none;
+}
+#nav-links li {
+    font-size: 15px;
+    line-height: 35px;
+}
+.nav-link {
+    font-size: 15px;
+    line-height: 15px;
+    padding: 3px 6px;
+    color: var(--white, white);
+    transition: .2s ease;
+}
+.nav-link:hover {
+    color: var(--dark, black);
+    transition: .1s ease;
+}
+.nav-link-active {
+    color: var(--white, white);
+    border-radius: 0px;
+    border-bottom: 1px solid;
+}
+.nav-link-active:hover {
+    color: var(--dark, black);
+    background-color: transparent;
+}
+.nav-divide {
+    margin: 10px 0px;
+}
+
+
+/* Mobile */
+@media screen and (max-width: 500px){
+    nav {
+        width: 100vw;
+        height: 60px;
+        transition: .3s ease;
+    }
+    .drop-nav {
+        height: 100vh;
+        transition: .2s ease;
+    }
+    #logo {
+        height: 50px;
+        width: auto;
+        margin: 5px 0px;
+    }
+    #burger {
+        display: block;
+        position: absolute;
+        z-index: 4;
+        right: 0;
+        top: 0;
+        padding: 20px;
+    }
+    #burger:hover {
+        cursor: pointer;
+    }
+    .burger-bar {
+        width: 25px;
+        height: 2px;
+        margin: 4px 0px;
+        background-color: var(--white, white);
+        border-radius: 20px;
+        transition: .2s ease;
+    }
+    .bar1-active {
+        transform: rotate(-45deg) translate(-5px, 3.5px);
+        transition: .2s ease;
+    }
+    .bar2-active {
+        width: 0;
+        transition: .2s ease;
+    }
+    .bar3-active {
+        transform: rotate(45deg) translate(-5px, -3.5px);
+        transition: .2s ease;
+    }
+    #social {
+        position: relative;
+        margin-top: 70px;
+    }
+    .nav-container {
+        transform: translateY(100vh);
+        opacity: 0;
+        transition: .2s ease;
+    }
+    .nav-container-active {
+        transform: translateY(0px);
+        opacity: 1;
+        transition: .2s ease;
+    }
+    #nav-links li {
+        font-size: 17px;
+        line-height: 40px;
+    }
+}

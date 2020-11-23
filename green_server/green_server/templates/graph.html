@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block head%}
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type='text/javascript' src="{{ url_for('static', filename='graph.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="content-container">
+
+        <h2>{{ title }}</h2>
+
+        <div class="parameter-selection">
+            {% for i in range(0, param_length) %}
+            <div class="parameter-item">
+                {% if i == 0 %}
+                    <input type="checkbox" id="parameter-{{ parameters[i].public_id }}" name="parameterSelection" value="{{ parameters[i].public_id }}" class="selector" checked>
+                {% else %}
+                    <input type="checkbox" id="parameter-{{ parameters[i].public_id }}" name="parameterSelection" value="{{ parameters[i].public_id }}" class="selector">
+                {% endif %}
+                <label for="parameter-{{ parameters[i].public_id }}">{{ parameters[i].device.name }}.{{ parameters[i].name }}</label>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="time-selection">
+            <div class="time-item">
+                <input type="radio" id="hour" name="graphTime"  value="1" class="selector" checked>
+                <label for="hour">Past Hour</label>
+            </div>
+            <div class="time-item">
+                <input type="radio" id="day" name="graphTime" class="selector" value="24">
+                <label for="day">Past Day</label>
+            </div>
+            <div class="time-item">
+                <input type="radio" id="week" name="graphTime" class="selector" value="168">
+                <label for="week">Past Week</label>
+            </div>
+            <div class="time-item">
+                <input type="radio" id="month" name="graphTime" class="selector" value="730">
+                <label for="month">Past Month</label>
+            </div>
+            <div class="time-item">
+                <input type="radio" id="sixMonth" name="graphTime" class="selector" value="4380">
+                <label for="sixMonth">Past 6 Months</label>
+            </div>
+            <div class="time-item">
+                <input type="radio" id="year" name="graphTime" class="selector" value="8766">
+                <label for="year">Past Year</label>
+            </div>
+            <div class="time-item">
+                <input type="radio" id="allTime" name="graphTime" class="selector" value="500000">
+                <label for="allTime">All Time</label>
+            </div>
+        </div>
+
+        <div class="time-selection">
+            <input type="date" id="start-data">
+            <p class="divider">-</p>
+            <input type="date" id="end-data">
+            <button id="custom-data-time">>></button>
+        </div>
+
+    </div>
+
+    <div id="chartContainer"></div>
+
+    <div class="content-container"></div>
+
+    <script>graph();</script>
+{% endblock %}
