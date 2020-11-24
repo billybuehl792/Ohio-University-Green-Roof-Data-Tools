@@ -35,7 +35,7 @@ def data():
         t1 = int(data.get('data_start'))
         t2 = int(data.get('data_end'))
     except:
-        abort(400)
+        return jsonify({'message': 'Bad Request!'}), 400
 
     # query parameter
     parameters = []
@@ -54,7 +54,7 @@ def data():
                 t_string = ('Daily', '%Y-%m-%d')            # Daily averages
     
     # return json data to '/data'
-    return jsonify(query_data(parameters, t1, t2, t_string))
+    return jsonify(query_data(parameters, t1, t2, t_string)), 200
 
 @api.route('/push', methods=['POST'])
 @token_required

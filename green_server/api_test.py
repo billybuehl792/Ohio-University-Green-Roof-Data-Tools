@@ -8,14 +8,14 @@ import sys
 from random import random
 
 def get_token(user, password):
-    page = 'http://localhost:5000/get_key'
+    page = 'http://ougr.its.ohio.edu/get_key'
     auth = HTTPBasicAuth(user, password)
     req = requests.get(page, auth=auth)
     result = json.loads(req.content.decode('UTF-8'))
     return result.get('token')
 
 def get_data(token='', parameter_ids=[], averages=0, data_start=round(datetime.now().timestamp()), data_end=round(datetime.now().timestamp())):
-    page = 'http://localhost:5000/data'
+    page = 'http://ougr.its.ohio.edu/data'
     params = {
         'parameter_ids': parameter_ids,     # parameter list
         'averages': averages,               # no averages - all data
@@ -30,7 +30,7 @@ def get_data(token='', parameter_ids=[], averages=0, data_start=round(datetime.n
         return None
 
 def data_push(token='', parameter_id=0, timestamp=round(datetime.now().timestamp()), value=0):
-    page = 'http://localhost:5000/push'
+    page = 'http://ougr.its.ohio.edu/push'
     params = {
         'parameter_id': parameter_id,
         'timestamp': timestamp,
@@ -46,21 +46,24 @@ def data_push(token='', parameter_id=0, timestamp=round(datetime.now().timestamp
 if __name__ == '__main__':
     # retrieve token
     try:
-        username = sys.argv[1]
-        password = sys.argv[2]
+        # username = sys.argv[1]
+        # password = sys.argv[2]
+        username = 'itsclass'
+        password = 'class115#'
     except IndexError:
         print('provide: "username" "password"')
         sys.exit()
 
     token = get_token(username, password)
+    print(token)
     parameter_ids = [1176000961, 3002308254]
     data_start = 1599944591
     data_end = 1599945191
 
     # push a random data point
-    push_data_point = data_push(token=token, parameter_id=parameter_ids[0], value=random()*100)
-    print(push_data_point.get('message'))
+    # push_data_point = data_push(token=token, parameter_id=parameter_ids[0], value=random()*100)
+    # print(push_data_point.get('message'))
 
     # retrieve data
-    data = get_data(token=token, parameter_ids=parameter_ids, data_start=data_start, data_end=data_end)
-    print(data)
+    # data = get_data(token=token, parameter_ids=parameter_ids, data_start=data_start, data_end=data_end)
+    # print(data)
