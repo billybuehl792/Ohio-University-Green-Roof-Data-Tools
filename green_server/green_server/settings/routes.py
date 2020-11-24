@@ -83,7 +83,7 @@ def delete_user(user_id):
     if not user or user.admin:
         abort(404)
     
-    delete_info = 'WARNING: Deleting a device will also delete parameters and data associated with the device!'
+    delete_info = 'WARNING: Deleting a user will log the user out!'
 
     form = DeleteForm()
     if form.validate_on_submit():
@@ -98,7 +98,7 @@ def delete_user(user_id):
         else:
             flash(f'Please check fields', 'danger')
 
-    return render_template('confirm_delete.html', title=f'Delete Device - "{user.username}"', form=form, delete_info=delete_info, devices=Device.query.all())
+    return render_template('confirm_delete.html', title=f'Delete User - "{user.username}"', form=form, delete_info=delete_info, devices=Device.query.all())
 
 # Device
 @settings.route('/device/new', methods=['GET', 'POST'])
