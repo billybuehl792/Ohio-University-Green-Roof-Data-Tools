@@ -1,9 +1,12 @@
 
 import uuid
+import csv
+import os
 from datetime import datetime
 from flask import abort, Blueprint, flash, redirect, render_template, request, url_for
 from green_server import db, bcrypt
 from green_server.models import User, Device, Parameter, DataPoint
+from green_server.config import Config
 from green_server.settings.forms import RegistrationForm, DeviceForm, ParameterForm, DeleteForm, UploadDataForm
 from green_server.settings.utils import admin_required
 
@@ -276,15 +279,21 @@ def upload_data():
     form = UploadDataForm()
     if request.method == 'POST':
         try:
-            # read and format csv data
-            file_data = form.data_file.data.read().decode()
-            data = [row.split(',') for row in file_data.split('\r\n') if row != '']
-            for row in data:
-                param = Parameter.query.filter_by(public_id=row[0]).first()
-                timestamp = datetime.fromtimestamp(int(row[1]))
-                value = float(row[2])
-                data_point = DataPoint(timestamp=timestamp, value=value, parameter=param)
-                db.session.add(data_point)
+
+            # Write CSV file
+            _, f_ext = os.path.splitext(form.data_file.data.filename)
+            csv_file = os.path.join(Config.DATA_UPLOADS, f'{str(uuid.uuid4().time_low)}{f_ext}')
+            form.data_file.data.save(csv_file)
+
+            with open(csv_file, newline='') as f:
+                reader = csv.reader(f, delimiter=',')
+                for row in reader:
+                    param = Parameter.query.filter_by(public_id=int(row[0])).first()
+                    timestamp = datetime.fromtimestamp(int(row[1]))
+                    value = float(row[2])
+                    data_point = DataPoint(timestamp=timestamp, value=value, parameter=param)
+                    db.session.add(data_point)
+            
             db.session.commit()
             flash('Data upload success!', 'success')
         except:
