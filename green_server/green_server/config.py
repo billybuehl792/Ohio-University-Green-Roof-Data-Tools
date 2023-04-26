@@ -2,14 +2,15 @@
 import os
 import json
 
-config_file = '/etc/config/configuration.json'
+config_file = '/etc/ougr_config.json'
 with open(config_file, 'r') as f:
     config = json.load(f)
 
-class Config:
+basedir = os.path.abspath(os.path.dirname(__file__))
 
-    SECRET_KEY = config.get('SECRET_KEY')
-    SQLALCHEMY_DATABASE_URI = config.get('SQLALCHEMY_DATABASE_URI')
+class Config(object):
+    SECRET_KEY = config.get("SECRET_KEY")
+    SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(basedir, 'green_data.db')}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JSON_SORT_KEYS = False
     CSRF_ENABLED = True
