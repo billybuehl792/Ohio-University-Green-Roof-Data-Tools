@@ -4,12 +4,10 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from green_server.config import Config
 
-
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 login_manager = LoginManager()
 login_manager.login_view = 'main.login'
-
 
 def create_app(config_class=Config):
     app = Flask(__name__)
@@ -30,3 +28,5 @@ def create_app(config_class=Config):
     app.register_blueprint(errors)
 
     return app
+
+app = create_app()
